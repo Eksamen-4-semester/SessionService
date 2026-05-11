@@ -1,6 +1,6 @@
 ﻿namespace SessionService.Models;
 
-public class Session
+public class Session //En session = En hold træning
 {
     public int SessionId { get; set; }
 
@@ -12,11 +12,13 @@ public class Session
 
     public int RoomId { get; set; }
 
-    public int Capacity { get; set; } 
+    public int CurrentCapacity { get; set; }
+    
+    public int MaxCapacity { get; set; }
 
     public TeamSessionStatus Status { get; set; }
     
-    
+    public List<int> MemberIds { get; set; } = new List<int>();
 }
 public enum TeamSessionStatus
 {
@@ -25,18 +27,6 @@ public enum TeamSessionStatus
     Full
 }
 
-//modtager fra ekstern Medlem.cs som sender - public int MemberId { get; set; } public int SessionId { get; set; } som request
-//Med de to oprettes booking.cs
-//Session.cs modtager booking.cs
-//finder ud af om der er plads, hvis der ikke er plads slettes booking.cs
-//Hvis der er plads fastholdes den og der tilføjes i capacity
-
-//Træner opretter session
-//Træner hentes fra user
-
-
-
+//tip
 // Man kan søge for antal af tilmeldte i en session ved at søge
 // Hvor mange bookinger har x som sessionId
-
-
