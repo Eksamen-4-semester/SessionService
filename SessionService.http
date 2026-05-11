@@ -1,0 +1,137 @@
+@SessionService_HostAddress = http://localhost:5003
+
+### ============================================
+### FITNESS CENTER ENDPOINTS
+### ============================================
+
+### CREATE FITNESS CENTER
+POST {{SessionService_HostAddress}}/api/fitnesscenters
+Content-Type: application/json
+
+{
+  "fitnessCenterId": 0,
+  "adresse": "Hovedgaden 42, København"
+}
+
+###
+
+### GET ALL FITNESS CENTERS
+GET {{SessionService_HostAddress}}/api/fitnesscenters
+Accept: application/json
+
+###
+
+### GET FITNESS CENTER BY ID
+GET {{SessionService_HostAddress}}/api/fitnesscenters/1
+Accept: application/json
+
+###
+
+### ============================================
+### ROOM ENDPOINTS
+### ============================================
+
+### CREATE ROOM
+POST {{SessionService_HostAddress}}/api/rooms
+Content-Type: application/json
+
+{
+  "roomId": 0,
+  "roomName": "Yoga Studio",
+  "capacity": 20,
+  "fitnessCenterId": 1
+}
+
+###
+
+### GET ALL ROOMS
+GET {{SessionService_HostAddress}}/api/rooms
+Accept: application/json
+
+###
+
+### GET ROOM BY ID
+GET {{SessionService_HostAddress}}/api/rooms/1
+Accept: application/json
+
+###
+
+### ============================================
+### SESSION ENDPOINTS
+### ============================================
+
+### CREATE SESSION
+POST {{SessionService_HostAddress}}/api/session
+Content-Type: application/json
+
+{
+  "sessionId": 0,
+  "startTime": "2026-05-15T10:00:00",
+  "endTime": "2026-05-15T11:00:00",
+  "instructorId": 1,
+  "roomId": 1,
+  "currentCapacity": 0,
+  "maxCapacity": 20,
+  "status": 1,
+  "memberIds": []
+}
+
+###
+
+### GET ALL SESSIONS
+GET {{SessionService_HostAddress}}/api/session
+Accept: application/json
+
+###
+
+### GET SESSION BY ID
+GET {{SessionService_HostAddress}}/api/session/1
+Accept: application/json
+
+###
+
+### UPDATE SESSION
+PUT {{SessionService_HostAddress}}/api/session/1
+Content-Type: application/json
+
+{
+  "sessionId": 1,
+  "startTime": "2026-05-15T11:00:00",
+  "endTime": "2026-05-15T12:00:00",
+  "instructorId": 1,
+  "roomId": 1,
+  "currentCapacity": 0,
+  "maxCapacity": 25,
+  "status": 1,
+  "memberIds": []
+}
+
+###
+
+### ============================================
+### BOOKING ENDPOINTS
+### ============================================
+
+### CREATE BOOKING (medlem 1 booker session 1)
+POST {{SessionService_HostAddress}}/api/members/1/bookings/1
+Content-Type: application/json
+
+###
+
+### CANCEL BOOKING
+PUT {{SessionService_HostAddress}}/api/members/1/bookings/1/cancel
+Content-Type: application/json
+
+###
+
+### GET SESSIONS FOR MEMBER
+GET {{SessionService_HostAddress}}/api/members/1/sessions
+Accept: application/json
+
+###
+
+### DELETE SESSION
+DELETE {{SessionService_HostAddress}}/api/session/1
+Accept: application/json
+
+###
