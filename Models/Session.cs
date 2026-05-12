@@ -17,8 +17,6 @@ public class Session //En session = En hold træning
     public int MaxCapacity { get; set; }
 
     public TeamSessionStatus Status { get; set; }
-    
-    public List<int> MemberIds { get; set; } = new List<int>();
 }
 public enum TeamSessionStatus
 {

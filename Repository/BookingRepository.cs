@@ -69,8 +69,11 @@ public class BookingRepositoryMongoDb : IBookingRepository
                 return null;
             }
 
-            // TJEK CAPACITY
-            if (session.MemberIds.Count >= room.Capacity) //Hvis lokalet er fyldt op
+            // TJEK CAPACITY - tæl antal bookings for denne session
+            var existingBookingsCount = await _bookingCollection
+                .CountDocumentsAsync(Builders<Booking>.Filter.Eq(x => x.SessionId, sessionId)); //Tæller bookings for session
+
+            if (existingBookingsCount >= room.Capacity) //Hvis lokalet er fyldt op
             {
                 _logger.LogWarning(
                     "Session {SessionId} er fuldt booket",
@@ -96,12 +99,6 @@ public class BookingRepositoryMongoDb : IBookingRepository
 
             await _bookingCollection.InsertOneAsync(booking); //Indsætter booking i databasen
 
-            // TILFØJ MEMBER TIL SESSION
-            session.MemberIds.Add(memberId); //Tilføjer medlem til session liste
-
-            await _sessionCollection.ReplaceOneAsync(
-                sessionFilter,
-                session); //Opdaterer session i databasen
 
             _logger.LogInformation(
                 "Booking {BookingId} blev oprettet",
@@ -136,25 +133,6 @@ public class BookingRepositoryMongoDb : IBookingRepository
                 return false;
             }
 
-            // FIND SESSION
-            var sessionFilter = Builders<Session>
-                .Filter.Eq(x => x.SessionId, booking.SessionId); //Finder session udfra booking
-
-            var session = await _sessionCollection
-                .Find(sessionFilter) //Bruger filter til at finde session
-                .FirstOrDefaultAsync(); //Returnerer første match eller null
-
-            if (session == null) //Hvis session ikke findes
-            {
-                return false;
-            }
-
-            // FJERN MEMBER FRA SESSION
-            session.MemberIds.Remove(memberId); //Fjerner medlem fra session listen
-
-            await _sessionCollection.ReplaceOneAsync(
-                sessionFilter,
-                session); //Opdaterer session i databasen
 
             // DELETE BOOKING
             var deleteResult = await _bookingCollection
