@@ -8,6 +8,8 @@ public class SessionRepositoryMongoDb : ISessionRepository
 {
     private readonly IMongoCollection<Session> _sessionCollection;
 
+    private readonly IMongoCollection<Booking> _bookingCollection;
+
     private readonly ILogger<SessionRepositoryMongoDb> _logger;
 
     private readonly IHttpClientFactory _httpClientFactory;
@@ -21,6 +23,7 @@ public class SessionRepositoryMongoDb : ISessionRepository
         _httpClientFactory = httpClientFactory;
 
         _sessionCollection = database.GetCollection<Session>("Sessions");
+        _bookingCollection = database.GetCollection<Booking>("Bookings");
     }
 
     //Hent alle holdtræninger
@@ -63,21 +66,50 @@ public class SessionRepositoryMongoDb : ISessionRepository
     {
         try
         {
-            var filter = Builders<Session>
-                .Filter.AnyEq(x => x.MemberIds, memberId); //Finder sessions hvor member id findes i listen
+            _logger.LogDebug(
+                "GetSessionsByMemberId called med memberId {MemberId}",
+                memberId);
 
-            return await _sessionCollection
-                .Find(filter) //Finder alle sessions med member
-                .ToListAsync(); //Laver resultat om til liste
+            // Find alle bookings for denne medlem
+            var bookingFilter = Builders<Booking>
+                .Filter.Eq(x => x.MemberId, memberId);
+
+            var memberBookings = await _bookingCollection
+                .Find(bookingFilter)
+                .ToListAsync();
+
+            if (!memberBookings.Any())
+            {
+                _logger.LogDebug("Ingen bookings fundet for medlem {MemberId}", memberId);
+                return new List<Session>();
+            }
+
+            // Hent session IDs fra bookings
+            var sessionIds = memberBookings.Select(b => b.SessionId).ToList();
+
+            // Find alle sessions med disse IDs
+            var sessionFilter = Builders<Session>
+                .Filter.In(x => x.SessionId, sessionIds);
+
+            var sessions = await _sessionCollection
+                .Find(sessionFilter)
+                .ToListAsync();
+
+            _logger.LogDebug(
+                "Fundet {SessionCount} sessions for medlem {MemberId}",
+                sessions.Count,
+                memberId);
+
+            return sessions;
         }
         catch (Exception e)
         {
             _logger.LogError(
                 e,
                 "Fejl ved hentning af sessions for medlem {MemberId}",
-                memberId); //Logger hvilket medlem der gav fejl
+                memberId);
 
-            return new List<Session>(); //Returnerer tom liste ved fejl
+            return new List<Session>();
         }
     }
 
