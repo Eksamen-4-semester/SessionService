@@ -117,7 +117,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddOpenApi(); // Tilføjer openapi/swagger
 builder.Services.AddControllers();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazor",
+        policy =>
+        {
+            policy.AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin();
+        });
+});
 // Tilføjer authorization
 builder.Services.AddAuthorization();
 
@@ -214,6 +223,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection(); // Redirecter http requests til https
 
 // Authentication SKAL komme før Authorization
+app.UseCors("AllowBlazor"); // Aktiverer CORS policy for at tillade requests fra Blazor frontend
 app.UseAuthentication(); // Validerer JWT token
 app.UseAuthorization(); // Tjekker brugerens adgang
 
