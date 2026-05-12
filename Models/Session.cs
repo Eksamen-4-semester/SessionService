@@ -3,7 +3,9 @@
 public class Session //En session = En hold træning
 {
     public int SessionId { get; set; }
-
+    
+    public string SessionName { get; set; }
+    
     public DateTime StartTime { get; set; }
 
     public DateTime EndTime { get; set; }

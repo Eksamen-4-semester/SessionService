@@ -10,6 +10,7 @@ using VaultSharp;
 using VaultSharp.V1.AuthMethods;
 using VaultSharp.V1.AuthMethods.Token;
 using VaultSharp.V1.Commons;
+using SessionService.Data;
 
 // Endpoint til vault, vault og Service skal være på samme docker netværk,
 // så 'localhost' bliver til 'vault' i endpoint
@@ -196,6 +197,13 @@ builder.Services.AddScoped<ISessionRepository, SessionRepositoryMongoDb>();
 builder.Services.AddScoped<IBookingRepository, BookingRepositoryMongoDb>();
 
 var app = builder.Build(); // Builder application
+using (var scope = app.Services.CreateScope())
+{
+    var database = scope.ServiceProvider
+        .GetRequiredService<IMongoDatabase>();
+
+    await SeedData.InitializeAsync(database);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
