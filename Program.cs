@@ -92,6 +92,16 @@ try
     Environment.SetEnvironmentVariable(
         "MONGO_CONNECTION_STRING",
         connectionString); // Gemmer connection string som environment variable
+    
+    string dbName = mongoSecrets
+                                  .Data.Data["MONGO_SESSION_DB"]?.ToString()
+                              ?? throw new NullReferenceException(
+                                  "MONGO DB not found in Vault");
+    
+    Environment.SetEnvironmentVariable(
+        "MONGO_DATABASE_NAME",
+        dbName); // Gemmer dbname string som environment variable
+    
 }
 catch (Exception e)
 {
