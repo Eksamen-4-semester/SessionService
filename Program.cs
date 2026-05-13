@@ -163,7 +163,7 @@ builder.Host.UseNLog(); // Bruger NLog som logger
 builder.Services.AddHttpClient("userService", client =>
 {
     client.BaseAddress = new Uri(
-        "http://localhost:5000"); // Base url til userservice
+        "http://nginx:4000/userservice"); // Base url til userservice
 });
 
 // MongoDB Setup
