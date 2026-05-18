@@ -83,10 +83,18 @@ try
             path: "mongo",
             mountPoint: "secret"); // Henter mongo secrets fra vault
 
-    string connectionString = mongoSecrets
-        .Data.Data["MONGO_CONNECTION_STRING"]?.ToString()
-        ?? throw new NullReferenceException(
-            "MONGO_CONNECTION_STRING not found in Vault");
+    string connectionString;
+    if (Environment.GetEnvironmentVariable("DOCKER") != null)
+    {
+        connectionString = mongoSecrets
+            .Data.Data["MONGO_CONNECTION_STRING"]?.ToString()
+            ?? throw new NullReferenceException(
+                "MONGO_CONNECTION_STRING not found in Vault");
+    }
+    else
+    {
+        connectionString = "mongodb://admin:secret123@localhost:27017/?authSource=admin";
+    }
 
     logger.Debug("MongoDB connection string loaded from Vault");
 
@@ -160,6 +168,12 @@ builder.Logging.ClearProviders(); // Fjerner default logging providers
 builder.Host.UseNLog(); // Bruger NLog som logger
 
 // HttpClient for UserService
+var userServiceClientUrl = Environment.GetEnvironmentVariable("USERSERVICE_URL");
+if (string.IsNullOrEmpty(userServiceClientUrl))
+{
+    Console.WriteLine("UserServiceUrl is not set");
+    userServiceClientUrl = "http://localhost:5034";
+}
 builder.Services.AddHttpClient("userService", client =>
 {
     client.BaseAddress = new Uri(
