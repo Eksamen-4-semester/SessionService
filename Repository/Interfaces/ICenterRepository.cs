@@ -1,4 +1,6 @@
-﻿using SessionService.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using SessionService.Models;
 
 namespace SessionService.Repository.Interfaces;
 

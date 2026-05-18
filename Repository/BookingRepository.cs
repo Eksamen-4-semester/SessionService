@@ -1,4 +1,8 @@
-﻿using MongoDB.Driver;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using SessionService.Models;
 using SessionService.Repository.Interfaces;
 

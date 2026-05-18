@@ -1,4 +1,6 @@
-﻿namespace SessionService.Models;
+﻿using System;
+
+namespace SessionService.Models;
 
 public class Session //En session = En hold træning
 {
