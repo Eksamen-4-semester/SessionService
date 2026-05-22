@@ -1,0 +1,72 @@
+{
+  "version": 2,
+  "dgSpecHash": "eF9ziyVKsAo=",
+  "success": true,
+  "projectFilePath": "/Users/thanushanbalasubramaniam/SessionService/SessionService.csproj",
+  "expectedPackageFiles": [
+    "/Users/thanushanbalasubramaniam/.nuget/packages/awssdk.core/3.7.100.14/awssdk.core.3.7.100.14.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/awssdk.securitytoken/3.7.100.14/awssdk.securitytoken.3.7.100.14.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/dnsclient/1.6.1/dnsclient.1.6.1.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/10.0.7/microsoft.aspnetcore.authentication.jwtbearer.10.0.7.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/microsoft.aspnetcore.authorization/10.0.7/microsoft.aspnetcore.authorization.10.0.7.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/microsoft.aspnetcore.openapi/10.0.2/microsoft.aspnetcore.openapi.10.0.2.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/microsoft.identitymodel.abstractions/8.18.0/microsoft.identitymodel.abstractions.8.18.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/microsoft.identitymodel.jsonwebtokens/8.18.0/microsoft.identitymodel.jsonwebtokens.8.18.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/microsoft.identitymodel.logging/8.18.0/microsoft.identitymodel.logging.8.18.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/microsoft.identitymodel.protocols/8.0.1/microsoft.identitymodel.protocols.8.0.1.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/microsoft.identitymodel.protocols.openidconnect/8.0.1/microsoft.identitymodel.protocols.openidconnect.8.0.1.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/microsoft.identitymodel.tokens/8.18.0/microsoft.identitymodel.tokens.8.18.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/mongodb.bson/3.8.0/mongodb.bson.3.8.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/mongodb.driver/3.8.0/mongodb.driver.3.8.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/mongodb.driver.core/2.30.0/mongodb.driver.core.2.30.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/mongodb.libmongocrypt/1.12.0/mongodb.libmongocrypt.1.12.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/nlog/5.3.2/nlog.5.3.2.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/nlog.extensions.logging/5.3.11/nlog.extensions.logging.5.3.11.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/nlog.loki/1.0.0/nlog.loki.1.0.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/nlog.web.aspnetcore/5.3.11/nlog.web.aspnetcore.5.3.11.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/sharpcompress/0.30.1/sharpcompress.0.30.1.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/snappier/1.0.0/snappier.1.0.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/system.identitymodel.tokens.jwt/8.18.0/system.identitymodel.tokens.jwt.8.18.0.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/vaultsharp/1.17.5.1/vaultsharp.1.17.5.1.nupkg.sha512",
+    "/Users/thanushanbalasubramaniam/.nuget/packages/zstdsharp.port/0.7.3/zstdsharp.port.0.7.3.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1510",
+      "level": "Warning",
+      "message": "PackageReference Microsoft.AspNetCore.Authorization will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
+      "projectPath": "/Users/thanushanbalasubramaniam/SessionService/SessionService.csproj",
+      "warningLevel": 1,
+      "filePath": "/Users/thanushanbalasubramaniam/SessionService/SessionService.csproj",
+      "libraryId": "Microsoft.AspNetCore.Authorization",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Package 'SharpCompress' 0.30.1 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-6c8g-7p36-r338",
+      "projectPath": "/Users/thanushanbalasubramaniam/SessionService/SessionService.csproj",
+      "warningLevel": 1,
+      "filePath": "/Users/thanushanbalasubramaniam/SessionService/SessionService.csproj",
+      "libraryId": "SharpCompress",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'Snappier' 1.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-pggp-6c3x-2xmx",
+      "projectPath": "/Users/thanushanbalasubramaniam/SessionService/SessionService.csproj",
+      "warningLevel": 1,
+      "filePath": "/Users/thanushanbalasubramaniam/SessionService/SessionService.csproj",
+      "libraryId": "Snappier",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
+}
