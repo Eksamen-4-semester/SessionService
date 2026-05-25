@@ -56,41 +56,6 @@ public class BookingController : ControllerBase
 
         return Ok(booking);
     }
-
-    [Authorize(Roles = "Member")]
-    [HttpPut] // Medlem afmelder sig en holdtræning
-    [Route("members/{memberId}/bookings/{bookingId}/cancel")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> CancelBooking(
-        int memberId,
-        int bookingId)
-    {
-        _logger.LogInformation(
-            "Called {function} endpoint",
-            nameof(CancelBooking));
-
-        var result = await _bookingRepository
-            .CancelBooking(memberId, bookingId);
-
-        if (!result)
-        {
-            _logger.LogWarning(
-                "Kunne ikke annullere booking {BookingId} for medlem {MemberId}",
-                bookingId,
-                memberId);
-
-            return BadRequest("Cancel booking failed");
-        }
-
-        _logger.LogInformation(
-            "Booking {BookingId} blev annulleret af medlem {MemberId}",
-            bookingId,
-            memberId);
-
-        return Ok();
-    }
     [Authorize(Roles = "Member")]
     [HttpPut]
     [Route("members/{memberId}/sessions/{sessionId}/cancel")]
