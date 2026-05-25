@@ -11,6 +11,7 @@ public interface IBookingRepository
     Task<bool> CancelBooking( //Det er bare en delete
         int memberId,
         int bookingId);
+    Task<bool> CancelBookingBySessionId(int memberId, int sessionId);
 }
 //1 TILMELDING
 //modtager fra ekstern Medlem.cs som sender - public int MemberId { get; set; } public int SessionId { get; set; } som request
