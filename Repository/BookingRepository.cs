@@ -36,17 +36,6 @@ public class BookingRepositoryMongoDb : IBookingRepository
     {
         try
         {
-            // TJEK OM MEMBER FINDES
-            var userClient = _httpClientFactory.CreateClient("userService"); //Bruger userservice client
-
-            var memberResponse = await userClient
-                .GetAsync($"api/member/{memberId}"); //Sender request til userservice
-
-            if (!memberResponse.IsSuccessStatusCode) //Hvis medlem ikke findes
-            {
-                return null;
-            }
-
             // FIND SESSION
             var sessionFilter = Builders<Session>
                 .Filter.Eq(x => x.SessionId, sessionId); //Finder session med matching id
