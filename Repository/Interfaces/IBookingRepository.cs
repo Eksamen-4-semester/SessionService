@@ -8,9 +8,6 @@ public interface IBookingRepository
     Task<Booking?> CreateBooking(
         int memberId,
         int sessionId);
-    Task<bool> CancelBooking( //Det er bare en delete
-        int memberId,
-        int bookingId);
     Task<bool> CancelBookingBySessionId(int memberId, int sessionId);
 }
 //1 TILMELDING

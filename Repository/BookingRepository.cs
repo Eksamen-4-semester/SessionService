@@ -116,46 +116,4 @@ public class BookingRepositoryMongoDb : IBookingRepository
 
         return result.DeletedCount > 0;
     }
-//Afmeld booking
-    public async Task<bool> CancelBooking(
-        int memberId,
-        int bookingId)
-    {
-        try
-        {
-            // FIND BOOKING
-            var bookingFilter = Builders<Booking>
-                .Filter.Eq(x => x.BookingId, bookingId); //Finder booking med matching id
-
-            var booking = await _bookingCollection
-                .Find(bookingFilter) //Bruger filter til at finde booking
-                .FirstOrDefaultAsync(); //Returnerer første match eller null
-
-            if (booking == null || booking.MemberId != memberId) //Hvis booking ikke findes eller ikke tilhører medlemmet
-            {
-                return false;
-            }
-
-
-            // DELETE BOOKING
-            var deleteResult = await _bookingCollection
-                .DeleteOneAsync(bookingFilter); //Sletter booking fra databasen
-
-            if (deleteResult.DeletedCount > 0) //Hvis booking blev slettet
-            {
-                _logger.LogInformation(
-                    "Booking {BookingId} blev annulleret",
-                    bookingId); //Logger hvilken booking der blev annulleret
-
-                return true;
-            }
-
-            return false; //Returnerer false hvis ingen booking blev slettet
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Fejl ved annullering af booking"); //Logger fejl ved annullering
-            return false;
-        }
-    }
 }
