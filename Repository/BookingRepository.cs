@@ -116,7 +116,17 @@ public class BookingRepositoryMongoDb : IBookingRepository
             return null;
         }
     }
+    public async Task<bool> CancelBookingBySessionId(int memberId, int sessionId)
+    {
+        var filter = Builders<Booking>.Filter.And(
+            Builders<Booking>.Filter.Eq(x => x.MemberId, memberId),
+            Builders<Booking>.Filter.Eq(x => x.SessionId, sessionId)
+        );
 
+        var result = await _bookingCollection.DeleteOneAsync(filter);
+
+        return result.DeletedCount > 0;
+    }
 //Afmeld booking
     public async Task<bool> CancelBooking(
         int memberId,

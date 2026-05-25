@@ -91,4 +91,19 @@ public class BookingController : ControllerBase
 
         return Ok();
     }
+    [Authorize(Roles = "Member")]
+    [HttpPut]
+    [Route("members/{memberId}/sessions/{sessionId}/cancel")]
+    public async Task<IActionResult> CancelBookingBySessionId(
+        int memberId,
+        int sessionId)
+    {
+        var result = await _bookingRepository
+            .CancelBookingBySessionId(memberId, sessionId);
+
+        if (!result)
+            return BadRequest("Cancel booking failed");
+
+        return Ok();
+    }
 }
