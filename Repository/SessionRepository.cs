@@ -124,21 +124,6 @@ public class SessionRepositoryMongoDb : ISessionRepository
     {
         try
         {
-            var userClient = _httpClientFactory.CreateClient("userService");
-
-            //finder instruktør
-            var instructorResponse = await userClient //Bruger userservice til at finde instruktor
-                .GetAsync($"api/member/{session.InstructorId}"); //Selve request til usersericen
-
-            if (!instructorResponse.IsSuccessStatusCode) //Hvis instruktør ikke findes
-            {
-                _logger.LogWarning(
-                    "Instruktør {InstructorId} blev ikke fundet",
-                    session.InstructorId);
-
-                return false;
-            }
-
             var highestSession = await _sessionCollection
                 .Find(Builders<Session>.Filter.Empty)
                 .SortByDescending(x => x.SessionId)
@@ -171,27 +156,37 @@ public class SessionRepositoryMongoDb : ISessionRepository
         try
         {
             var filter = Builders<Session>
-                .Filter.Eq(x => x.SessionId, sessionId); //Finder session som skal opdateres
+                .Filter.Eq(x => x.SessionId, sessionId);
 
-            updatedSession.SessionId = sessionId; //Sikrer at id ikke ændres
+            var existingSession = await _sessionCollection
+                .Find(filter)
+                .FirstOrDefaultAsync();
+
+            if (existingSession == null)
+                return false;
+
+            var update = Builders<Session>.Update
+                .Set(x => x.SessionName, updatedSession.SessionName)
+                .Set(x => x.StartTime, updatedSession.StartTime)
+                .Set(x => x.EndTime, updatedSession.EndTime)
+                .Set(x => x.InstructorId, updatedSession.InstructorId)
+                .Set(x => x.RoomId, updatedSession.RoomId)
+                .Set(x => x.CurrentCapacity, updatedSession.CurrentCapacity)
+                .Set(x => x.MaxCapacity, updatedSession.MaxCapacity)
+                .Set(x => x.Status, updatedSession.Status);
 
             var result = await _sessionCollection
-                .ReplaceOneAsync(filter, updatedSession); //Erstatter gammel session med ny data
+                .UpdateOneAsync(filter, update);
 
-            if (result.ModifiedCount > 0) //Hvis noget faktisk blev ændret
-            {
-                _logger.LogInformation(
-                    "Session {SessionId} blev opdateret",
-                    sessionId); //Logger hvilken session der blev opdateret
-
-                return true;
-            }
-
-            return false; //Returnerer false hvis intet blev ændret
+            return result.ModifiedCount > 0 || result.MatchedCount > 0;
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Fejl ved opdatering af session {SessionId}", sessionId); //Logger fejl ved update
+            _logger.LogError(
+                e,
+                "Fejl ved opdatering af session {SessionId}",
+                sessionId);
+
             return false;
         }
     }
