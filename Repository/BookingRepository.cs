@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
@@ -15,105 +14,115 @@ public class BookingRepositoryMongoDb : IBookingRepository
     private readonly IMongoCollection<Room> _roomCollection;
 
     private readonly ILogger<BookingRepositoryMongoDb> _logger;
-    private readonly IHttpClientFactory _httpClientFactory;
 
     public BookingRepositoryMongoDb(
         IMongoDatabase database,
-        ILogger<BookingRepositoryMongoDb> logger,
-        IHttpClientFactory httpClientFactory)
+        ILogger<BookingRepositoryMongoDb> logger)
     {
         _logger = logger;
-        _httpClientFactory = httpClientFactory;
 
-        _bookingCollection = database.GetCollection<Booking>("Bookings"); //Henter bookings collection fra databasen
-        _sessionCollection = database.GetCollection<Session>("Sessions"); //Henter sessions collection fra databasen
-        _roomCollection = database.GetCollection<Room>("Rooms"); //Henter rooms collection fra databasen
+        _bookingCollection = database.GetCollection<Booking>("Bookings");
+        _sessionCollection = database.GetCollection<Session>("Sessions");
+        _roomCollection = database.GetCollection<Room>("Rooms");
     }
-//opret booking
-    public async Task<Booking?> CreateBooking(
-        int memberId,
-        int sessionId)
+
+    public async Task<Booking?> CreateBooking(int memberId, int sessionId)
     {
         try
         {
-            // FIND SESSION
             var sessionFilter = Builders<Session>
-                .Filter.Eq(x => x.SessionId, sessionId); //Finder session med matching id
+                .Filter.Eq(x => x.SessionId, sessionId);
 
             var session = await _sessionCollection
-                .Find(sessionFilter) //Bruger filter til at finde session
-                .FirstOrDefaultAsync(); //Returnerer første match eller null
+                .Find(sessionFilter)
+                .FirstOrDefaultAsync();
 
-            if (session == null) //Hvis session ikke findes
-            {
+            if (session == null)
                 return null;
-            }
 
-            // FIND ROOM
-            var roomFilter = Builders<Room>
-                .Filter.Eq(x => x.RoomId, session.RoomId); //Finder lokale udfra sessionens room id
-
-            var room = await _roomCollection
-                .Find(roomFilter) //Bruger filter til at finde lokale
-                .FirstOrDefaultAsync(); //Returnerer første match eller null
-
-            if (room == null) //Hvis lokale ikke findes
-            {
+            if (session.CurrentCapacity >= session.MaxCapacity)
                 return null;
-            }
 
-            // TJEK CAPACITY - tæl antal bookings for denne session
-            var existingBookingsCount = await _bookingCollection
-                .CountDocumentsAsync(Builders<Booking>.Filter.Eq(x => x.SessionId, sessionId)); //Tæller bookings for session
+            var alreadyBookedFilter = Builders<Booking>.Filter.And(
+                Builders<Booking>.Filter.Eq(x => x.MemberId, memberId),
+                Builders<Booking>.Filter.Eq(x => x.SessionId, sessionId)
+            );
 
-            if (existingBookingsCount >= room.Capacity) //Hvis lokalet er fyldt op
-            {
-                _logger.LogWarning(
-                    "Session {SessionId} er fuldt booket",
-                    sessionId); //Logger at session er fuld
+            var alreadyBooked = await _bookingCollection
+                .Find(alreadyBookedFilter)
+                .AnyAsync();
 
+            if (alreadyBooked)
                 return null;
-            }
 
-            // OPRET BOOKING
-            Booking booking = new Booking()
+            var booking = new Booking
             {
                 BookingId = (
                     await _bookingCollection
-                        .Find(Builders<Booking>.Filter.Empty) //Finder alle bookings
-                        .SortByDescending(x => x.BookingId) //Sorterer efter højeste id
-                        .Limit(1) //Tager kun den højeste
-                        .FirstOrDefaultAsync() //Henter første resultat
-                )?.BookingId + 1 ?? 1, //Sætter booking id til max +1 eller 1 hvis ingen findes
+                        .Find(Builders<Booking>.Filter.Empty)
+                        .SortByDescending(x => x.BookingId)
+                        .Limit(1)
+                        .FirstOrDefaultAsync()
+                )?.BookingId + 1 ?? 1,
 
-                MemberId = memberId, //Gemmer member id
-                SessionId = sessionId //Gemmer session id
+                MemberId = memberId,
+                SessionId = sessionId
             };
 
-            await _bookingCollection.InsertOneAsync(booking); //Indsætter booking i databasen
+            await _bookingCollection.InsertOneAsync(booking);
 
+            session.CurrentCapacity++;
+
+            session.Status = session.CurrentCapacity >= session.MaxCapacity
+                ? TeamSessionStatus.Full
+                : TeamSessionStatus.Available;
+
+            await _sessionCollection.ReplaceOneAsync(sessionFilter, session);
 
             _logger.LogInformation(
                 "Booking {BookingId} blev oprettet",
-                booking.BookingId); //Logger hvilken booking der blev oprettet
+                booking.BookingId);
 
             return booking;
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Fejl ved oprettelse af booking"); //Logger fejl ved booking
+            _logger.LogError(e, "Fejl ved oprettelse af booking");
             return null;
         }
     }
+
     public async Task<bool> CancelBookingBySessionId(int memberId, int sessionId)
     {
-        var filter = Builders<Booking>.Filter.And(
+        var bookingFilter = Builders<Booking>.Filter.And(
             Builders<Booking>.Filter.Eq(x => x.MemberId, memberId),
             Builders<Booking>.Filter.Eq(x => x.SessionId, sessionId)
         );
 
-        var result = await _bookingCollection.DeleteOneAsync(filter);
+        var result = await _bookingCollection.DeleteOneAsync(bookingFilter);
 
-        return result.DeletedCount > 0;
+        if (result.DeletedCount == 0)
+            return false;
+
+        var sessionFilter = Builders<Session>
+            .Filter.Eq(x => x.SessionId, sessionId);
+
+        var session = await _sessionCollection
+            .Find(sessionFilter)
+            .FirstOrDefaultAsync();
+
+        if (session == null)
+            return true;
+
+        if (session.CurrentCapacity > 0)
+            session.CurrentCapacity--;
+
+        session.Status = session.CurrentCapacity >= session.MaxCapacity
+            ? TeamSessionStatus.Full
+            : TeamSessionStatus.Available;
+
+        await _sessionCollection.ReplaceOneAsync(sessionFilter, session);
+
+        return true;
     }
 }
